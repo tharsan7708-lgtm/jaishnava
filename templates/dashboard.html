@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jaishnava Designers</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/profile.png') }}" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-4xl mx-auto py-20">
+    <h1 class="text-3xl font-bold text-center mb-6">Jaishnava Designers</h1>
+
+    <!-- Employee count display -->
+    <div class="text-center mb-10">
+      <p class="text-lg font-medium text-gray-700">
+        Total Employees: <span class="font-bold text-blue-600">{{ employee_count }}</span>
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 mt-10">
+      <a href="/view_employees" class="bg-white shadow p-5 text-center rounded-xl hover:bg-blue-50">View Employees</a>
+      <a href="/attendance" class="bg-white shadow p-5 text-center rounded-xl hover:bg-blue-50">Attendance</a>
+      <a href="/calendar" class="bg-white shadow p-5 text-center rounded-xl hover:bg-blue-50">Calendar</a> <!-- New Calendar Button -->
+      <a href="/advance" class="bg-white shadow p-5 text-center rounded-xl hover:bg-blue-50">Advance</a>
+      <a href="/bonus" class="bg-white shadow p-5 text-center rounded-xl hover:bg-blue-50">Bonus</a>
+      <a href="/salary" class="bg-white shadow p-5 text-center rounded-xl hover:bg-blue-50">Salary</a>
+      
+    </div>
+
+    <!-- Logout button centered -->
+    <div class="mt-16 flex justify-center">
+      <a href="/logout" class="bg-red-500 text-white shadow p-5 text-center rounded-xl hover:bg-red-600 w-40">Logout</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jaishnava Designers</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/profile.png') }}" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="bg-white p-10 rounded-lg shadow-lg max-w-md text-center">
+    <h1 class="text-2xl font-bold text-red-600 mb-4">Confirm Deletion</h1>
+    <p class="mb-6 text-gray-700">Are you sure you want to delete employee <strong>{{ emp.name }}</strong> (ID: {{ emp.emp_id }})?</p>
+    
+    <form method="POST" action="{{ url_for('delete_employee', emp_id=emp.emp_id) }}">
+      <div class="flex justify-center gap-4">
+        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Yes, Delete</button>
+        <a href="{{ url_for('view_employees') }}" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancel</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

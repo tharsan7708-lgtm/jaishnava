@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jaishnava Designers</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/profile.png') }}" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-blue-700">Employee Details</h1>
+    <a href="{{ url_for('add_employee') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      + Add New Employee
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for emp in employees %}
+    <div class="bg-white shadow rounded-xl p-4">
+      <div class="flex items-center space-x-4">
+        <img src="{{ url_for('static', filename='uploads/' + emp.photo) }}" alt="Photo"
+             class="w-20 h-20 rounded-full object-cover border-2 border-blue-500">
+        <div>
+          <h2 class="text-lg font-bold">{{ emp.name }}</h2>
+          <p class="text-sm text-gray-600">Experience: {{ emp.experience }} years</p>
+          <p class="text-sm text-gray-500">ID: {{ emp.emp_id }}</p>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-between">
+        <a href="#" class="text-blue-600 hover:underline text-sm">Edit</a>
+        <a href="#" class="text-red-600 hover:underline text-sm">Delete</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="mt-8 text-center">
+    <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
+  </div>
+
+</body>
+</html>

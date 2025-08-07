@@ -1,0 +1,56 @@
+<!-- templates/advance.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jaishnava Designers</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="{{ url_for('static', filename='images/profile.png') }}" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex flex-col justify-center items-center h-screen">
+  <form method="POST" class="bg-white p-8 rounded-xl shadow-md w-96">
+    <h2 class="text-xl font-bold mb-6 text-center">Advance Payment</h2>
+
+    <!-- Employee Dropdown -->
+    <select name="name" class="w-full mb-4 p-3 border rounded" required>
+      <option value="">Select Employee</option>
+      {% for emp in employees %}
+        <option value="{{ emp.name }}">{{ emp.name }}</option>
+      {% endfor %}
+    </select>
+
+    <!-- Advance Amount -->
+    <input type="number" name="amount" placeholder="Advance Amount" class="w-full mb-4 p-3 border rounded" required>
+
+    <!-- Date Picker -->
+    <input type="text" name="date" id="datePicker" placeholder="Select Date" class="w-full mb-4 p-3 border rounded" required>
+
+    <!-- Submit -->
+    <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">Submit</button>
+  </form>
+<!-- CSV Download Box -->
+  <div class="mt-6 bg-white p-4 rounded shadow-md w-full max-w-md flex justify-between items-center">
+    <p class="text-gray-800">Download all advance records:</p>
+    <a href="{{ url_for('download_advance_csv') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">⬇ Download </a>
+  </div>
+  
+  <!-- Back to Dashboard -->
+  <div class="mt-4">
+    <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
+  </div>
+
+
+  <!-- Flatpickr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    flatpickr("#datePicker", {
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      altInput: true,
+      altFormat: "F j, Y"
+    });
+  </script>
+</body>
+</html>

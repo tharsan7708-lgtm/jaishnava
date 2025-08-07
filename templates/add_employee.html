@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jaishnava Designers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="{{ url_for('static', filename='images/profile.png') }}" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex justify-center items-center h-screen">
+  <form method="POST" enctype="multipart/form-data" class="bg-white p-8 rounded-xl shadow-md w-96">
+    <h2 class="text-xl font-bold mb-6 text-center">Add Employee</h2>
+
+    <!-- Employee ID -->
+    <input type="text" name="emp_id" placeholder="Employee ID" class="w-full mb-4 p-3 border rounded" required>
+
+    <!-- Employee Name -->
+    <input type="text" name="name" placeholder="Employee Name" class="w-full mb-4 p-3 border rounded" required>
+
+    <!-- Gender Dropdown -->
+    <select name="gender" class="w-full mb-4 p-3 border rounded" required>
+      <option value="" disabled selected>Select Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <!-- Job Role Dropdown -->
+    <select name="job" class="w-full mb-4 p-3 border rounded" required>
+      <option value="" disabled selected>Select Job</option>
+      <option value="Manager">Manager</option>
+      <option value="Operator">Operator</option>
+      <option value="Framer">Framer</option>
+      <option value="Helper">Helper</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <!-- Salary -->
+    <input type="number" name="salary" placeholder="Salary in ₹" class="w-full mb-4 p-3 border rounded" required>
+
+    <!-- Date of Joining -->
+    <input type="text" id="joiningDatePicker" name="dof" placeholder="Date of Joining" class="w-full mb-4 p-3 border rounded" required>
+
+    <!-- Profile Picture Upload (Required) -->
+    <label class="block mb-1 text-sm font-medium text-gray-700" for="profile_pic">Profile Picture</label>
+    <input type="file" name="profile_pic" id="profile_pic" accept="image/*" class="w-full mb-4 p-2 border rounded bg-white text-sm" required>
+
+    <!-- Submit Button -->
+    <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">Add Employee</button>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <p class="mt-4 text-red-500 text-sm">{{ messages[0] }}</p>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Back Link -->
+    <p class="mt-6 text-sm text-center text-blue-600"><a href="/dashboard">← Back to Dashboard</a></p>
+  </form>
+
+  <!-- Flatpickr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    flatpickr("#joiningDatePicker", {
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      altInput: true,
+      altFormat: "F j, Y"
+    });
+  </script>
+</body>
+</html>

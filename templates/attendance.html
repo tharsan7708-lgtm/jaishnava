@@ -1,0 +1,63 @@
+<!-- templates/attendance.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jaishnava Designers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="{{ url_for('static', filename='images/profile.png') }}" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+
+  <form method="POST" class="bg-white p-8 rounded-2xl shadow-lg w-96">
+    <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800">Mark Attendance</h2>
+
+    <!-- Employee Selection -->
+    <select name="name" class="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+      <option value="">Select Employee</option>
+      {% for emp in employees %}
+        <option value="{{ emp.name }}">{{ emp.name }}</option>
+      {% endfor %}
+    </select>
+
+    <!-- Date Picker -->
+    <input type="text" id="datePicker" name="date" placeholder="Select Date" class="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+
+    <!-- Attendance Status -->
+    <select name="status" class="w-full mb-6 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+      <option value="full">Full Day</option>
+      <option value="half">Half Day</option>
+      <option value="absent">Absent</option>
+    </select>
+
+    <!-- Submit Button -->
+    <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-200">Mark</button>
+
+    <!-- Flash Message -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <p class="mt-4 text-red-500 text-sm text-center">{{ messages[0] }}</p>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Back to Dashboard -->
+    <p class="mt-6 text-sm text-center text-blue-600 hover:underline">
+      <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+    </p>
+  </form>
+
+  <!-- Flatpickr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    flatpickr("#datePicker", {
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      defaultDate: "today",
+      altInput: true,
+      altFormat: "F j, Y"
+    });
+  </script>
+
+</body>
+</html>
