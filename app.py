@@ -3,6 +3,8 @@ from flask_mysqldb import MySQL
 from datetime import datetime, date
 import MySQLdb.cursors
 from flask import Response
+import pymysql
+pymysql.install_as_MySQLdb()
 
 import tempfile
 import os
