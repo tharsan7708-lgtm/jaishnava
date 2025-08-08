@@ -4,6 +4,7 @@ from datetime import datetime, date
 import MySQLdb.cursors
 from flask import Response
 
+
 import tempfile
 import os
 from werkzeug.utils import secure_filename
@@ -738,6 +739,6 @@ def download_calendar_csv():
 
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0",port=8080,debug=False)
     
 
