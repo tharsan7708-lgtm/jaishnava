@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Employee</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-700">Edit Employee</h2>
+    
+    <form method="POST">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+        <input type="text" value="{{ employee.name }}" readonly class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight cursor-not-allowed">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Job</label>
+        <input type="text" name="job" value="{{ employee.job }}" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Salary per Day</label>
+        <input type="number" name="salary" value="{{ employee.salary_per_day }}" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight">
+      </div>
+
+      <div class="flex items-center justify-between">
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Update
+        </button>
+        <a href="{{ url_for('view_employees') }}" class="text-blue-500 hover:underline text-sm">Cancel</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

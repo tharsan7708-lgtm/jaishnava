@@ -384,12 +384,40 @@ def view_employees():
 
     return render_template('view_employees.html', employees=employees)
 
+@app.route('/edit_employee/<int:emp_id>', methods=['GET', 'POST'])
+def edit_employee(emp_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # Fetch employee by ID
+    cursor.execute("SELECT * FROM employees WHERE emp_id = %s", (emp_id,))
+    employee = cursor.fetchone()
+
+    if not employee:
+        flash("Employee not found", "error")
+        return redirect(url_for('view_employees'))
+
+    if request.method == 'POST':
+        # Get new values from form
+        new_job = request.form['job']
+        new_salary = request.form['salary']
+
+        # Update in DB
+        cursor.execute("UPDATE employees SET job = %s, salary_per_day = %s WHERE emp_id = %s",
+                       (new_job, new_salary, emp_id))
+        mysql.connection.commit()
+        flash("Employee details updated successfully", "success")
+        return redirect(url_for('view_employees'))
+
+    return render_template('edit_employee.html', employee=employee)
+
+
 @app.route('/delete_employee/<emp_id>', methods=['GET', 'POST'])
 def delete_employee(emp_id):
     cursor = mysql.connection.cursor()
     if request.method == 'POST':
         cursor.execute("DELETE FROM employees WHERE emp_id = %s", (emp_id,))
         mysql.connection.commit()
+        
         flash('Employee deleted successfully!', 'success')
         return redirect(url_for('view_employees'))
     else:
@@ -424,66 +452,6 @@ def calendar():
     
 
 
-@app.route("/calendar_view/<int:emp_id>")
-def calendar_view(emp_id):
-    month = int(request.args.get("month", datetime.now().month))
-    year = int(request.args.get("year", datetime.now().year))
-
-    cursor = mysql.connection.cursor()
-
-    # Get employee name
-    cursor.execute("SELECT name FROM employees WHERE emp_id = %s", (emp_id,))
-    row = cursor.fetchone()
-    if not row:
-        return "Employee not found", 404
-
-    name = row[0]
-    name_cleaned = name.replace(" ", "_")
-
-    # Get actual emp_id again (unnecessary here, already have emp_id, so skip this)
-    # If you really want it from the name again:
-    cursor.execute("SELECT emp_id FROM employees WHERE name = %s", (name,))
-    emp_row = cursor.fetchone()
-    if not emp_row:
-        return "Employee not found", 404
-    actual_emp_id = emp_row[0]  # Fixed: access as tuple
-
-    table_name = f"attendance_{actual_emp_id}"
-
-    # Get attendance records
-    query = f"""
-        SELECT date, status FROM {table_name}
-        WHERE MONTH(date) = %s AND YEAR(date) = %s
-        ORDER BY date
-    """
-    try:
-        cursor.execute(query, (month, year))
-        records = cursor.fetchall()
-    except Exception as e:
-        return f"Error fetching attendance data: {e}", 500
-
-    # Calculate total present days
-    full_days = sum(1 for _, status in records if status == "full")
-    half_days = sum(1 for _, status in records if status == "half")
-    total_present_days = full_days + (0.5 * half_days)
-
-    # Prepare CSV file
-    filename = f"{name_cleaned}_attendance_{month}_{year}.csv"
-    temp_dir = tempfile.gettempdir()
-    filepath = os.path.join(temp_dir, filename)
-
-    try:
-        with open(filepath, mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(["Date", "Status"])
-            for date, status in records:
-                writer.writerow([date.strftime("%Y-%m-%d"), status])
-            writer.writerow([])
-            writer.writerow(["Total Present Days", total_present_days])
-    except Exception as e:
-        return f"Error writing CSV file: {e}", 500
-
-    return send_file(filepath, as_attachment=True)
 
 from flask import send_file
 import csv, tempfile, os
@@ -670,7 +638,105 @@ def download_bonus_csv():
         headers={"Content-Disposition": "attachment;filename=bonus_records.csv"}
     )
 
+from flask import send_file, request
+from io import BytesIO, StringIO
+import calendar
+import csv
+from datetime import datetime
+import MySQLdb.cursors
 
+from flask import send_file, request
+from io import BytesIO
+import calendar
+from datetime import datetime
+import MySQLdb.cursors
+from openpyxl import Workbook
+from openpyxl.styles import PatternFill
+
+@app.route('/download_calendar_csv')
+def download_calendar_csv():
+    try:
+        month = int(request.args.get("month"))
+        year = int(request.args.get("year"))
+    except (TypeError, ValueError):
+        return "Invalid or missing month/year", 400
+
+    days_in_month = calendar.monthrange(year, month)[1]
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT emp_id, name FROM employees")
+    employees = cursor.fetchall()
+
+    # Create an Excel workbook and sheet
+    wb = Workbook()
+    ws = wb.active
+    ws.title = f"{month}-{year}"
+
+    # Define cell fill colors
+    full_fill = PatternFill(start_color="00FF00", end_color="00FF00", fill_type="solid")   # Green
+    half_fill = PatternFill(start_color="FFA500", end_color="FFA500", fill_type="solid")   # Orange
+    absent_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid") # Red
+
+    # Header row
+    headers = ["Employee Name"] + [str(day) for day in range(1, days_in_month + 1)] +['Total Days']
+    ws.append(headers)
+    ws.append([''])
+
+    # Add attendance data
+    for emp in employees:
+        emp_id = emp['emp_id']
+        name = emp['name']
+        table_name = f"attendance_{emp_id}"
+
+        row_index = ws.max_row + 1
+        ws.cell(row=row_index, column=1, value=name)
+
+        total_days_present = 0  # Track total days present for this employee
+
+        for day in range(1, days_in_month + 1):
+            date_str = f"{year}-{month:02d}-{day:02d}"
+            cursor.execute(f"SELECT status FROM {table_name} WHERE date = %s", (date_str,))
+            result = cursor.fetchone()
+
+            col_index = day + 1  # column 1 is name
+            cell = ws.cell(row=row_index, column=col_index)
+
+            if not result:
+                cell.value = ""
+            elif result['status'] == 'full':
+                cell.value = ""
+                cell.fill = full_fill
+                total_days_present += 1
+            elif result['status'] == 'half':
+                cell.value = ""
+                cell.fill = half_fill
+                total_days_present += 0.5
+            elif result['status'] == 'absent':
+                cell.value = ""
+                cell.fill = absent_fill
+            else:
+                cell.value = ""
+
+        # Set total present days in the last column
+        total_col_index = days_in_month + 2
+        ws.cell(row=row_index, column=total_col_index, value=total_days_present)
+        ws.append([''])
+
+    # Save to a BytesIO buffer
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    filename = f"attendance_{year}_{month:02d}.xlsx"
+    return send_file(
+        output,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name=filename
+    )
+
+
+    
 if __name__ == '__main__':
     app.run(debug=True)
     
